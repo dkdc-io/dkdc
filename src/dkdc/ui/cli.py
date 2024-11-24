@@ -77,7 +77,7 @@ def gui(
         )
     else:
         run_gui_app(
-            app="dkdc_todo.ui.gui:app",  # goofy! but needed to reload
+            app="dkdc.ui.gui:app",  # goofy! but needed to reload
             host="0.0.0.0",
             port=port,
             reload=True,
