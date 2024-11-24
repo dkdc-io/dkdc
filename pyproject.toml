@@ -1,0 +1,47 @@
+[project]
+name = "dkdc"
+version = "0.11.0"
+authors = [{ name = "Cody", email = "cody@dkdc.dev" }]
+description = "dkdc"
+readme = "readme.md"
+requires-python = ">=3.12"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  # dkdc-io public-facing packages
+  'stringflow',
+  'botchain',
+  # dkdc-io packages
+  'dkdc-lake',
+  'dkdc-user',
+  'dkdc-chat',
+  'dkdc-todo',
+  'dkdc-crypto',
+  'dkdc-email',
+  'dkdc-vault',
+  'dkdc-log',
+  'dkdc-env',
+  'dkdc-state',
+  'dkdc-util',
+  # UI packages
+  'rich',
+  'typer',
+  'plotly',
+  'shiny',
+  'shinyswatch',
+  'shinywidgets',
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "ipython", "jupyter", "nbclient", "ipykernel"]
+test = ["pytest"]
+
+[project.urls]
+"Homepage" = "https://github.com/dkdc-io/dkdc"
+"Bug Tracker" = "https://github.com/dkdc-io/dkdc/issues"
+
+[project.scripts]
+"dkdc" = "dkdc.ui.cli:app"
