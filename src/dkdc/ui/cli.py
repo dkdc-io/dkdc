@@ -1,6 +1,8 @@
 # imports
 import typer
 
+from dkdc.ui.console import print
+
 # typer config
 ## default kwargs
 default_kwargs = {
@@ -14,6 +16,30 @@ app = typer.Typer(help="dkdc", **default_kwargs)
 
 
 # commands
+# functions
+@app.command()
+@app.command("c", hidden=True)
+def config(
+    vim: bool = typer.Option(False, "--vim", "-v", help="open with (n)vim"),
+    env: bool = typer.Option(False, "--env", "-e", help="open .env file"),
+):
+    """
+    open config file(s)
+    """
+    import os
+    import subprocess
+
+    from dkdc_util import get_dkdc_dir
+
+    program = "nvim" if vim else "code"
+    filename = ".env" if env else "config.toml"
+
+    filename = os.path.join(get_dkdc_dir(), filename)
+
+    print(f"opening {filename} with {program}...")
+    subprocess.call([program, f"{filename}"])
+
+
 @app.command()
 @app.command("o", hidden=True)
 def open(
@@ -22,7 +48,7 @@ def open(
     """
     open thing
     """
-    from dkdc.utils import open_it, list_things
+    from dkdc.open import open_it, list_things
 
     if thing is None:
         list_things()

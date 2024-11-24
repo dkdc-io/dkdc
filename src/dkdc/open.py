@@ -1,8 +1,8 @@
 # imports
 import subprocess
 
-from rich import print
 from dkdc_util import get_config_toml
+from dkdc.ui.console import print
 
 
 # functions
