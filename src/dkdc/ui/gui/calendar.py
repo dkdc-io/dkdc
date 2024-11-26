@@ -32,7 +32,7 @@ def calendar_page():
     # adjust to capture the highlighted day of the `cal` command
     # cal_str = subprocess.run(["cal"], capture_output=True, text=True).stdout
     cal_str = get_cal_str()
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.layout_columns(
             ui.card(

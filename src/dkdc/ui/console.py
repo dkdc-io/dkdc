@@ -8,15 +8,15 @@ console = Console()
 
 # style map
 style_map = {
-    "dkdc": "bold white",
     "user": "bold cyan",
-    "dkdc.ai": "bold violet",
+    "dkdc.io": "bold violet",
+    "dkdc.ai": "bold white",
 }
 
 
 # functions
 def print(
-    text: str, as_markdown: bool = True, as_panel: bool = True, header: str = "dkdc-io"
+    text: str, as_markdown: bool = True, as_panel: bool = True, header: str = "dkdc.io"
 ) -> None:
     """
     print text

@@ -26,7 +26,6 @@ def todo_card(header, body, priority):
         ),
         ui.layout_columns(
             ui.input_action_button("done", "done", class_="btn-primary"),
-            # TODO: implement edit flow (modal?) (perhaps clear all flow w/ confirmation while we're here)
             ui.input_action_button("edit", "edit", class_="btn-info"),
             ui.input_action_button("delete", "delete", class_="btn-danger"),
         ),
@@ -82,7 +81,7 @@ def todo_card_server(input, output, session, todos_modified):
             ui.modal(
                 ui.input_text_area("todo_edit", "todo", value=t["body"]),
                 ui.input_action_button(
-                    "todo_edit_submit", "submit", class_="btn-primary"
+                    "todo_edit_submit", "save", class_="btn-primary"
                 ),
                 title=f"editing {id}",
                 easy_close=True,
@@ -128,7 +127,7 @@ def todo_card_server(input, output, session, todos_modified):
 # page of todos
 @module.ui
 def todo_page():
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.layout_columns(
             ui.card(

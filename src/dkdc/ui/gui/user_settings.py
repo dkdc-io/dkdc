@@ -9,7 +9,7 @@ def user_settings_page():
         ui.nav_panel("authentication", auth_page("user_settings")),
     ]
 
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.card(
             ui.input_action_button(
@@ -22,7 +22,7 @@ def user_settings_page():
 
 @module.ui
 def user_page():
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.card(
             ui.card_header("username"),
@@ -33,7 +33,7 @@ def user_page():
 
 @module.ui
 def auth_page():
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.layout_columns(
             ui.card(

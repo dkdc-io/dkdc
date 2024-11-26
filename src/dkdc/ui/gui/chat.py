@@ -60,7 +60,7 @@ def chat_card_server(input, output, session):
 # page of chat
 @module.ui
 def chat_page():
-    return ui.page_fluid(ui.br(), ui.output_ui("chat_list"))
+    return (ui.br(), ui.output_ui("chat_list"))
 
 
 @module.server

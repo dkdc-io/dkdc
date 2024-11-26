@@ -6,7 +6,7 @@ from dkdc_util import now
 
 @module.ui
 def home_page():
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.layout_columns(
             ui.card(ui.card_header("welcome"), ui.output_text("welcome_text")),

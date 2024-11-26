@@ -4,7 +4,7 @@ from shiny import ui, module, reactive
 
 @module.ui
 def login_signup_page():
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.card(
             ui.card_header("login"),

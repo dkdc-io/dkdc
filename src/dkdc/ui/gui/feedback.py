@@ -10,7 +10,7 @@ lake = Lake()
 
 @module.ui
 def feedback_page():
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.card(
             ui.input_action_button(

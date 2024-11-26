@@ -8,7 +8,7 @@ def analytics_page():
         ui.nav_panel("analytics", main_page("analytics")),
     ]
 
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.card(
             ui.input_action_button(
@@ -21,7 +21,7 @@ def analytics_page():
 
 @module.ui
 def main_page():
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.layout_columns(
             ui.card(

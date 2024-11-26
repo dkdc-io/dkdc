@@ -13,7 +13,7 @@ lake = Lake()
 
 @module.ui
 def lake_page():
-    return ui.page_fluid(
+    return (
         ui.br(),
         ui.layout_columns(
             ui.card(ui.card_header("edit files"), ui.output_ui("files_chat")),
