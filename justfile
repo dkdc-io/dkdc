@@ -3,7 +3,11 @@
 # load environment variables
 set dotenv-load
 
+# variables
+container := "lostmydockeraccount/dkdc"
+
 # aliases
+alias up:=serve
 alias fmt:=format
 alias render:=docs-build
 alias preview:=docs-preview
@@ -45,6 +49,22 @@ release:
     just build-python
     @uv publish --token ${PYPI_TOKEN}
 
+# docker stuff
+build:
+    @docker build -t {{container}} .
+
+run:
+    @docker run -it --rm --name dkdc-dev --entrypoint bash {{container}}
+
+run-gui:
+    @docker run -d --rm -p 8010:8010 --name dkdc-gui {{container}} 'dkdc gui'
+
+serve *args:
+    @docker compose up -d --build --remove-orphans {{args}}
+
+down *args:
+    @docker compose down {{args}}
+
 # docs-build
 docs-build:
     @quarto render website
@@ -55,4 +75,4 @@ docs-preview:
 
 # open
 open:
-    @open https://dkdc.dev
+    @open https://dkdc.io

@@ -1,6 +1,6 @@
 [project]
 name = "dkdc"
-version = "0.13.0"
+version = "0.14.0"
 authors = [{ name = "Cody", email = "cody@dkdc.dev" }]
 description = "dkdc"
 readme = "readme.md"
@@ -15,12 +15,13 @@ dependencies = [
   'stringflow',
   'botchain',
   # dkdc-io packages
-  'dkdc-lake',
   'dkdc-user',
-  'dkdc-chat',
   'dkdc-todo',
-  'dkdc-crypto',
+  'dkdc-chat',
   'dkdc-email',
+  'dkdc-calendar',
+  'dkdc-lake',
+  'dkdc-crypto',
   'dkdc-vault',
   'dkdc-log',
   'dkdc-env',
@@ -30,6 +31,7 @@ dependencies = [
   'rich',
   'typer',
   'plotly',
+  'matplotlib',
   'shiny',
   'shinyswatch',
   'shinywidgets',

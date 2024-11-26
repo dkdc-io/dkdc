@@ -74,6 +74,40 @@ def todo_card_server(input, output, session, todos_modified):
         todos_modified()
 
     @reactive.Effect
+    @reactive.event(input.edit, ignore_init=True)
+    def _edit():
+        id = _get_id(session)
+        t = todo.get_todo(id=id)
+        ui.modal_show(
+            ui.modal(
+                ui.input_text_area("todo_edit", "todo", value=t["body"]),
+                ui.input_action_button(
+                    "todo_edit_submit", "submit", class_="btn-primary"
+                ),
+                title=f"editing {id}",
+                easy_close=True,
+            )
+        )
+
+    @reactive.Effect
+    @reactive.event(input.todo_edit_submit, ignore_init=True)
+    def _todo_edit_submit():
+        id = _get_id(session)
+        t = todo.get_todo(id=id)
+        todo.update_todo(
+            id=id,
+            user_id=t["user_id"],
+            subject=t["subject"],
+            body=input.todo_edit(),
+            priority=t["priority"],
+            status=t["status"],
+            description=t["description"],
+            labels=t["labels"],
+        )
+        todos_modified()
+        ui.modal_remove()
+
+    @reactive.Effect
     @reactive.event(input.delete, ignore_init=True)
     def _delete():
         id = _get_id(session)
@@ -95,6 +129,7 @@ def todo_card_server(input, output, session, todos_modified):
 @module.ui
 def todo_page():
     return ui.page_fluid(
+        ui.br(),
         ui.layout_columns(
             ui.card(
                 ui.card_header("add todo"),
@@ -184,6 +219,20 @@ def todo_server(input, output, session):
     @reactive.Effect
     @reactive.event(input.clear, ignore_init=True)
     def _clear():
+        t = todo.t().filter(ibis._["status"].isnull())
+        ui.modal_show(
+            ui.modal(
+                ui.markdown("are you sure?"),
+                ui.markdown(f"this will delete {t.count().to_pyarrow().as_py()} todos"),
+                ui.input_action_button("clear_confirmed", "yes", class_="btn-danger"),
+                title="clear all todos",
+                easy_close=True,
+            )
+        )
+
+    @reactive.Effect
+    @reactive.event(input.clear_confirmed, ignore_init=True)
+    def _clear_confirmed():
         for t in todo.t().filter(ibis._["status"].isnull()).to_pyarrow().to_pylist():
             todo.update_todo(
                 id=t["id"],
@@ -196,18 +245,20 @@ def todo_server(input, output, session):
                 labels=t["labels"],
             )
         todo_modified.set(todo_modified.get() + 1)
+        ui.modal_remove()
 
     @render.ui
     def todos_list():
         _ = todo_modified.get()
         return (
-            ui.layout_column_wrap(
+            ui.layout_columns(
                 *[
                     todo_card(t["id"], t["id"], t["body"], t["priority"])
                     for t in todo.t()
                     .filter(ibis._["status"].isnull())
                     .to_pyarrow()
                     .to_pylist()
-                ]
+                ],
+                col_widths=(4, 4, 4),
             ),
         )
