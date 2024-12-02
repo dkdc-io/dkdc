@@ -28,13 +28,13 @@ def feedback_page():
 
 
 @module.server
-def feedback_server(input, output, session, _to_home):
+def feedback_server(input, output, session, _to_home, username):
     @reactive.Effect
     @reactive.event(input.submit)
     def submit():
         lake.append_file(
             user_id="feedback",
-            path="dkdc",
+            path=f"{username.get()}",
             filename=f"{uuid()}.txt",
             filetype="txt",
             data=input.feedback_text().encode(),

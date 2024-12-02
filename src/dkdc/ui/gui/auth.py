@@ -1,6 +1,13 @@
 # imports
 from shiny import ui, module, reactive
 
+from dkdc_env import Env
+from dkdc_vault import Vault
+
+# global states
+env = Env()
+vault = Vault()
+
 
 @module.ui
 def login_signup_page():
@@ -30,11 +37,21 @@ def login_signup_page():
 
 @module.server
 def login_signup_server(input, output, session, _to_home, _set_username):
+    # TODO: actual login logic
+    u = env("username")
+    p = env("passphrase")
+
+    def _logged_in(u):
+        ui.notification_show(f"Welcome, {u}!", type="default")
+        _set_username(u)
+        _to_home()
+
+    if u and p:
+        _logged_in(u)
+
     @reactive.Effect
     @reactive.event(input.login_submit)
     def submit():
         u = input.username() or "dkdc"
-        _p = input.passphrase() or "password"
-        _set_username(u)
-        ui.notification_show(f"Welcome, {u}!", type="default")
-        _to_home()
+        p = input.passphrase() or "dkdc"  # noqa
+        _logged_in(u)

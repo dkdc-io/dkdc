@@ -22,7 +22,9 @@ def todo_card(header, body, priority):
         ui.card_header(header),
         ui.layout_columns(
             ui.markdown(body),
-            ui.input_numeric("priority", "priority", value=priority, min=0, max=100),
+            ui.input_numeric(
+                "priority", "priority", value=priority, min=0, max=100, step=10
+            ),
         ),
         ui.layout_columns(
             ui.input_action_button("done", "done", class_="btn-primary"),
@@ -154,7 +156,7 @@ def todo_page():
 
 
 @module.server
-def todo_server(input, output, session):
+def todo_server(input, output, session, username):
     # reactive values
     todo_modified = reactive.Value(0)
 
@@ -171,13 +173,13 @@ def todo_server(input, output, session):
     def stats():
         _ = todo_modified.get()
         return ui.markdown(
-            f"total todos: {todo.t().filter(ibis._["status"].isnull()).count().to_pyarrow().as_py()}"
+            f"total todos: {todo.t(user_id=username.get()).filter(ibis._["status"].isnull()).count().to_pyarrow().as_py()}"
         ), output_widget("status_plot")
 
     @render_widget
     def status_plot():
         _ = todo_modified.get()
-        t = todo.t()
+        t = todo.t(user_id=username.get())
         c = px.pie(
             t.fill_null({"status": "todo"})
             .group_by("status")
@@ -203,7 +205,7 @@ def todo_server(input, output, session):
         todo_priority = input.priority()
         todo.append_todo(
             id=id,
-            user_id=None,
+            user_id=username.get(),
             subject=None,
             body=todo_text,
             priority=todo_priority,
@@ -253,7 +255,7 @@ def todo_server(input, output, session):
             ui.layout_columns(
                 *[
                     todo_card(t["id"], t["id"], t["body"], t["priority"])
-                    for t in todo.t()
+                    for t in todo.t(user_id=username.get())
                     .filter(ibis._["status"].isnull())
                     .to_pyarrow()
                     .to_pylist()

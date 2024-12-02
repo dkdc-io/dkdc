@@ -26,7 +26,6 @@ def todo_add(
     print(f"adding todo: {text}...")
 
     todo = Todo()
-
     todo.append_todo(
         id=id,
         user_id=None,

@@ -64,7 +64,7 @@ def chat_page():
 
 
 @module.server
-def chat_server(input, output, session):
+def chat_server(input, output, session, username):
     # reactive values
     _chat_modified = reactive.Value(0)
 

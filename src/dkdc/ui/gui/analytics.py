@@ -37,7 +37,7 @@ def main_page():
 
 
 @module.server
-def analytics_server(input, output, session, _to_home):
+def analytics_server(input, output, session, _to_home, username):
     @reactive.Effect
     @reactive.event(input.to_home, ignore_init=True)
     def to_home():
