@@ -197,7 +197,7 @@ def gui_server(input, output, session):
             ),
             ui.navset_bar(
                 *elements,
-                title=ui.a("dkdc.io", href="https://dkdc.io", class_="navbar-brand"),
+                title=ui.a("dkdc.io", href="/", class_="navbar-brand"),
                 id="navbar",
             ),
         )
