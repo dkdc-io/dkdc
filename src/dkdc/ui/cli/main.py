@@ -30,7 +30,7 @@ def config(
 
     from dkdc_util import get_dkdc_dir
 
-    program = "nvim" if vim else "code"
+    program = "vim" if vim else "nvim"
     filename = ".env" if env else "config.toml"
 
     filename = os.path.join(get_dkdc_dir(), filename)
