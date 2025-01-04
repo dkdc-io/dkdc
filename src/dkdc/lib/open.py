@@ -1,6 +1,7 @@
 import subprocess
 
 from dkdc_util import get_config_toml
+from dkdc.ui.console import print
 
 
 def open_it(thing: str) -> None:

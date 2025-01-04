@@ -1,6 +1,6 @@
 [project]
 name = "dkdc"
-version = "0.16.0"
+version = "0.17.0"
 authors = [{ name = "Cody", email = "cody@dkdc.dev" }]
 description = "dkdc"
 readme = "readme.md"
@@ -47,7 +47,3 @@ test = ["pytest"]
 
 [project.scripts]
 "dkdc" = "dkdc.ui.cli:app"
-# I normally shell alias these, but may as well include
-"dkcd" = "dkdc.ui.cli:app"
-"dk" = "dkdc.ui.cli:app"
-"dc" = "dkdc.ui.cli:app"
