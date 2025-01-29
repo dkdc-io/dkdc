@@ -14,6 +14,9 @@ def open_it(thing: str) -> None:
         thing = config["open"]["things"][config["open"]["aliases"][thing]]
     elif thing in config["open"]["things"]:
         thing = config["open"]["things"][thing]
+    else:
+        print(f'thing "{thing}" not found')
+        return
 
     print(f"opening {thing}...")
     subprocess.call(["open", thing])

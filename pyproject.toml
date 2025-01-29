@@ -1,6 +1,6 @@
 [project]
 name = "dkdc"
-version = "0.17.0"
+version = "0.18.0"
 authors = [{ name = "Cody", email = "cody@dkdc.dev" }]
 description = "dkdc"
 readme = "readme.md"
@@ -31,10 +31,12 @@ dependencies = [
   'rich',
   'typer',
   'plotly',
-  'matplotlib',   # why?
+  'matplotlib', # why?
   'shiny',
   'shinyswatch',
   'shinywidgets',
+  # AI
+  "pydantic-ai",
 ]
 
 [project.optional-dependencies]
