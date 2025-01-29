@@ -1,6 +1,6 @@
 [project]
 name = "dkdc"
-version = "0.18.0"
+version = "0.19.0"
 authors = [{ name = "Cody", email = "cody@dkdc.dev" }]
 description = "dkdc"
 readme = "readme.md"
@@ -11,32 +11,11 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = [
-  # dkdc-io public-facing packages
-  'stringflow',
-  'botchain',
   # dkdc-io packages
-  'dkdc-user',
-  'dkdc-todo',
-  'dkdc-chat',
-  'dkdc-email',
-  'dkdc-calendar',
-  'dkdc-lake',
-  'dkdc-crypto',
-  'dkdc-vault',
-  'dkdc-log',
-  'dkdc-env',
-  'dkdc-state',
   'dkdc-util',
   # UI packages
   'rich',
   'typer',
-  'plotly',
-  'matplotlib', # why?
-  'shiny',
-  'shinyswatch',
-  'shinywidgets',
-  # AI
-  "pydantic-ai",
 ]
 
 [project.optional-dependencies]
