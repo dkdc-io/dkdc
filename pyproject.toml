@@ -1,6 +1,6 @@
 [project]
 name = "dkdc"
-version = "0.19.0"
+version = "0.20.0"
 authors = [{ name = "Cody", email = "cody@dkdc.dev" }]
 description = "dkdc"
 readme = "readme.md"
@@ -28,3 +28,9 @@ test = ["pytest"]
 
 [project.scripts]
 "dkdc" = "dkdc.ui.cli:app"
+
+[build-system]
+# TODO: update to uv build system once available
+# lmao: https://github.com/astral-sh/uv/issues/3957
+requires = ["hatchling"]
+build-backend = "hatchling.build"

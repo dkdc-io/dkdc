@@ -10,6 +10,7 @@ container := "lostmydockeraccount/dkdc"
 alias up:=serve
 alias fmt:=format
 alias render:=docs-build
+alias install:=sync
 alias preview:=docs-preview
 
 # list justfile recipes
@@ -19,18 +20,10 @@ default:
 # python things
 setup:
     @uv venv --python=3.12 --allow-existing
-    just install
-
-install:
-    @uv pip install -e '.[dev,test]'
-
-lock:
-    @echo "this is kinda messed up..."
-    @uv lock
+    just sync
 
 sync:
-    @echo "this is kinda messed up..."
-    @uv sync
+    @uv sync --all-extras --upgrade
 
 build-python:
     @rm -r dist || true
