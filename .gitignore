@@ -1,14 +1,2 @@
 .env
-.venv
-dist
-*.egg-info
-
-# data
-*.db
-*.ddb
-
-# diagrams
-*.excalidraw
-
-# dev notebook
-dev.qmd
+target
