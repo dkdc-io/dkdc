@@ -10,21 +10,22 @@ alias fmt:=format
 default:
     just --list
 
-# rust things
+# format
 format:
     @cargo fmt
 
+# install
 install:
     @cargo install --path .
 
-# publish-test
+# release-test
 release-test:
     @cargo publish --dry-run
 
-# publish
+# release
 release:
     @cargo publish
 
-# docs-preview
+# docs
 docs:
     @cargo doc --open
