@@ -17,7 +17,6 @@ pub fn format_line(text: &str, width: usize) -> String {
 }
 
 pub fn top_border(title: &str, width: usize) -> String {
-    // Insert a single space on either side of title for extra padding.
     let title = format!(" {} ", title);
     let title_len = title.chars().count();
     let inner_width = width - 2;
