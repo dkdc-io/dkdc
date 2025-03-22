@@ -14,6 +14,14 @@ default:
 format:
     @cargo fmt
 
+# build
+build *args:
+    @cargo build {{args}}
+
+# test
+test *args:
+    @cargo test {{args}}
+
 # install
 install:
     @cargo install --path .
@@ -29,3 +37,7 @@ release:
 # docs
 docs:
     @cargo doc --open
+
+# clean
+clean:
+    @cargo clean

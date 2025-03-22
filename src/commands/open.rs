@@ -51,7 +51,7 @@ pub fn open_it(input: &str) {
 
 pub fn print_config() {
     let width = get_terminal_width();
-    let title = "dkdc.io";
+    let title = "dkdc";
     let mut lines = Vec::new();
     lines.push(top_border(title, width));
 
