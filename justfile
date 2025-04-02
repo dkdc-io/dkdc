@@ -46,3 +46,7 @@ docs:
 # clean
 clean:
     @cargo clean
+
+# open
+open:
+    @open https://crates.io/crates/dkdc

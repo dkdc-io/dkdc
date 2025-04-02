@@ -3,7 +3,7 @@ mod config;
 mod terminal;
 
 use clap::{Parser, Subcommand};
-use commands::{config_it, open_it, print_config};
+use commands::{config_it, gif_it, open_it, print_config};
 
 #[derive(Parser)]
 #[command(name = "dkdc", about = "Develop knowledge, develop code", color = clap::ColorChoice::Auto, disable_help_subcommand=true)]
@@ -18,6 +18,11 @@ enum Commands {
     Open { thing: Option<String> },
     #[command(about = "Configures things (and aliases)", alias = "c")]
     Config {},
+    #[command(about = "Convert a video to a gif", alias = "g")]
+    Gif {
+        input: String,
+        output: Option<String>,
+    },
 }
 
 fn main() {
@@ -30,6 +35,9 @@ fn main() {
         },
         Commands::Config {} => {
             config_it();
+        }
+        Commands::Gif { input, output } => {
+            gif_it(input, output);
         }
     }
 }
