@@ -24,7 +24,7 @@ pub fn gif_it(input: String, output: Option<String>) -> Result<()> {
 
 fn extension_to_gif(input: &str) -> String {
     let input_path = Path::new(input);
-    
+
     match input_path.extension() {
         Some(ext) if ext != "gif" => {
             // If there's an extension and it's not gif, replace it
@@ -54,7 +54,10 @@ fn execute_ffmpeg(input: &str, output: &str) -> Result<()> {
         .map_err(|e| Error::Command(format!("Failed to execute ffmpeg: {}", e)))?;
 
     if !status.success() {
-        return Err(Error::Ffmpeg(format!("ffmpeg exited with status: {}", status)));
+        return Err(Error::Ffmpeg(format!(
+            "ffmpeg exited with status: {}",
+            status
+        )));
     }
 
     print_message("dkdc", " conversion successful!");
@@ -93,10 +96,7 @@ mod tests {
 
         // Try to execute ffmpeg
         // This test will likely fail if ffmpeg isn't installed
-        let result = execute_ffmpeg(
-            input_path.to_str().unwrap(),
-            output_path.to_str().unwrap(),
-        );
+        let result = execute_ffmpeg(input_path.to_str().unwrap(), output_path.to_str().unwrap());
 
         // We don't assert success/failure here since it depends on ffmpeg
         // being installed and working correctly
@@ -108,7 +108,7 @@ mod tests {
     fn test_gif_it_missing_file() {
         // Test with a file that doesn't exist
         let result = gif_it("nonexistent_file.mp4".to_string(), None);
-        
+
         // Should return a Missing error
         assert!(result.is_err());
         match result {

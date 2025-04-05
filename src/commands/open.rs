@@ -43,7 +43,8 @@ pub fn print_config() {
                             }
                         });
                         for (alias, target) in aliases_vec {
-                            let formatted = format!(" • {:<width$} | {}", alias, target, width = max_key_len);
+                            let formatted =
+                                format!(" • {:<width$} | {}", alias, target, width = max_key_len);
                             lines.push(format_line(&formatted, width));
                         }
                     }
@@ -70,7 +71,8 @@ pub fn print_config() {
                             }
                         });
                         for (thing, target) in things_vec {
-                            let formatted = format!(" • {:<width$} | {}", thing, target, width = max_key_len);
+                            let formatted =
+                                format!(" • {:<width$} | {}", thing, target, width = max_key_len);
                             lines.push(format_line(&formatted, width));
                         }
                     }
@@ -107,10 +109,10 @@ mod tests {
     fn test_open_it_nonexistent_thing() {
         // This test purposely doesn't mock config to test the error path
         // when a thing doesn't exist in config or the config file doesn't exist
-        
+
         // Use a non-existent thing
         let result = open_it("nonexistent_thing");
-        
+
         // Should result in an error
         assert!(result.is_err());
     }
@@ -119,35 +121,33 @@ mod tests {
     fn test_print_config_format() {
         // We can't easily test the output of print_config() directly since it prints to stdout
         // Instead, we'll test the key components that would be used in formatting
-        
+
         // Create a sample config
         let mut aliases = HashMap::new();
         aliases.insert("gh".to_string(), "github".to_string());
         aliases.insert("yt".to_string(), "youtube".to_string());
-        
+
         let mut things = HashMap::new();
         things.insert("github".to_string(), "https://github.com".to_string());
         things.insert("youtube".to_string(), "https://youtube.com".to_string());
-        
+
         let open = Open {
             aliases: Some(aliases),
             things: Some(things),
         };
-        
-        let config = Config {
-            open: Some(open),
-        };
-        
+
+        let config = Config { open: Some(open) };
+
         // We're not asserting exact output here since print_config depends on terminal width
         // Instead, we just verify that the struct can be created without panicking
         assert!(config.open.is_some());
-        
+
         if let Some(open) = &config.open {
             assert_eq!(open.aliases.as_ref().unwrap().len(), 2);
             assert_eq!(open.things.as_ref().unwrap().len(), 2);
         }
     }
-    
+
     #[test]
     #[ignore] // Ignored by default as it would actually open the URL
     fn test_open_it_with_mock_config() {
@@ -155,28 +155,32 @@ mod tests {
         let dir = tempdir().unwrap();
         let config_dir = dir.path().join(".dkdc");
         fs::create_dir_all(&config_dir).unwrap();
-        
+
         let config_file = config_dir.join("config.toml");
-        fs::write(&config_file, r#"
+        fs::write(
+            &config_file,
+            r#"
         [open]
         [open.aliases]
         "test" = "testsite"
         
         [open.things]
         "testsite" = "https://example.com"
-        "#).unwrap();
-        
+        "#,
+        )
+        .unwrap();
+
         // Set the DKDC_HOME environment variable to point to our temp directory
         unsafe {
             env::set_var("DKDC_HOME", config_dir.to_str().unwrap());
         }
-        
+
         // Now call open_it - we're just checking it doesn't panic
         let _result = open_it("test");
-        
+
         // We don't assert success as it depends on whether `open` command works
         // on the current platform, but the code should run without panicking
-        
+
         // Clean up
         unsafe {
             env::remove_var("DKDC_HOME");

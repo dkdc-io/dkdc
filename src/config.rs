@@ -33,8 +33,7 @@ pub fn get_dkdc_dir() -> Result<PathBuf> {
         })
         .map(|path| {
             if !path.exists() {
-                fs::create_dir_all(&path)
-                    .map_err(|e| Error::Io(e))?;
+                fs::create_dir_all(&path).map_err(|e| Error::Io(e))?;
             }
             Ok(path)
         })?
@@ -82,7 +81,9 @@ pub fn resolve_alias_to_thing(config: &Config, input: &str) -> Result<String> {
         }
         return Err(Error::Missing("No things defined in config".to_string()));
     }
-    Err(Error::Missing("Open section not defined in config".to_string()))
+    Err(Error::Missing(
+        "Open section not defined in config".to_string(),
+    ))
 }
 
 #[cfg(test)]
@@ -105,9 +106,7 @@ mod tests {
             things: Some(things),
         };
 
-        let config = Config {
-            open: Some(open),
-        };
+        let config = Config { open: Some(open) };
 
         // Test direct thing lookup
         let result = resolve_alias_to_thing(&config, "github");
@@ -134,7 +133,7 @@ mod tests {
     fn test_empty_config() {
         // Test with empty config
         let config = Config { open: None };
-        
+
         let result = resolve_alias_to_thing(&config, "anything");
         assert!(result.is_err());
         match result {
@@ -156,9 +155,7 @@ mod tests {
             things: None,
         };
 
-        let config = Config {
-            open: Some(open),
-        };
+        let config = Config { open: Some(open) };
 
         let result = resolve_alias_to_thing(&config, "gh");
         assert!(result.is_err());

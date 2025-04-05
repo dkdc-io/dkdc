@@ -63,7 +63,10 @@ mod tests {
         assert!(format!("{}", io_err).starts_with("IO error:"));
 
         let command_err = Error::Command("test command error".to_string());
-        assert_eq!(format!("{}", command_err), "Command error: test command error");
+        assert_eq!(
+            format!("{}", command_err),
+            "Command error: test command error"
+        );
 
         let missing_err = Error::Missing("test missing error".to_string());
         assert_eq!(format!("{}", missing_err), "Missing: test missing error");
@@ -76,7 +79,7 @@ mod tests {
     fn test_from_io_error() {
         let io_err = IoError::new(ErrorKind::NotFound, "test io error");
         let err: Error = io_err.into();
-        
+
         match err {
             Error::Io(_) => (),
             _ => panic!("Expected Error::Io variant"),
