@@ -48,3 +48,47 @@ impl From<toml::de::Error> for Error {
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::{Error as IoError, ErrorKind};
+
+    #[test]
+    fn test_error_display() {
+        let config_err = Error::Config("test config error".to_string());
+        assert_eq!(format!("{}", config_err), "Config error: test config error");
+
+        let io_err = Error::Io(IoError::new(ErrorKind::NotFound, "test io error"));
+        assert!(format!("{}", io_err).starts_with("IO error:"));
+
+        let command_err = Error::Command("test command error".to_string());
+        assert_eq!(format!("{}", command_err), "Command error: test command error");
+
+        let missing_err = Error::Missing("test missing error".to_string());
+        assert_eq!(format!("{}", missing_err), "Missing: test missing error");
+
+        let ffmpeg_err = Error::Ffmpeg("test ffmpeg error".to_string());
+        assert_eq!(format!("{}", ffmpeg_err), "FFmpeg error: test ffmpeg error");
+    }
+
+    #[test]
+    fn test_from_io_error() {
+        let io_err = IoError::new(ErrorKind::NotFound, "test io error");
+        let err: Error = io_err.into();
+        
+        match err {
+            Error::Io(_) => (),
+            _ => panic!("Expected Error::Io variant"),
+        }
+    }
+
+    #[test]
+    fn test_error_source() {
+        let io_err = Error::Io(IoError::new(ErrorKind::NotFound, "test io error"));
+        assert!(io_err.source().is_some());
+
+        let config_err = Error::Config("test config error".to_string());
+        assert!(config_err.source().is_none());
+    }
+}

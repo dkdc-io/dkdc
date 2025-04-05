@@ -84,3 +84,89 @@ pub fn resolve_alias_to_thing(config: &Config, input: &str) -> Result<String> {
     }
     Err(Error::Missing("Open section not defined in config".to_string()))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_resolve_alias_to_thing() {
+        // Create a test config with some aliases and things
+        let mut aliases = HashMap::new();
+        aliases.insert("gh".to_string(), "github".to_string());
+        aliases.insert("yt".to_string(), "youtube".to_string());
+
+        let mut things = HashMap::new();
+        things.insert("github".to_string(), "https://github.com".to_string());
+        things.insert("youtube".to_string(), "https://youtube.com".to_string());
+
+        let open = Open {
+            aliases: Some(aliases),
+            things: Some(things),
+        };
+
+        let config = Config {
+            open: Some(open),
+        };
+
+        // Test direct thing lookup
+        let result = resolve_alias_to_thing(&config, "github");
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "https://github.com");
+
+        // Test alias resolution
+        let result = resolve_alias_to_thing(&config, "gh");
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "https://github.com");
+
+        // Test missing thing
+        let result = resolve_alias_to_thing(&config, "nonexistent");
+        assert!(result.is_err());
+        match result {
+            Err(Error::Missing(msg)) => {
+                assert!(msg.contains("'nonexistent' not found in config"));
+            }
+            _ => panic!("Expected Missing error"),
+        }
+    }
+
+    #[test]
+    fn test_empty_config() {
+        // Test with empty config
+        let config = Config { open: None };
+        
+        let result = resolve_alias_to_thing(&config, "anything");
+        assert!(result.is_err());
+        match result {
+            Err(Error::Missing(msg)) => {
+                assert_eq!(msg, "Open section not defined in config");
+            }
+            _ => panic!("Expected Missing error"),
+        }
+    }
+
+    #[test]
+    fn test_config_without_things() {
+        // Config with aliases but no things
+        let mut aliases = HashMap::new();
+        aliases.insert("gh".to_string(), "github".to_string());
+
+        let open = Open {
+            aliases: Some(aliases),
+            things: None,
+        };
+
+        let config = Config {
+            open: Some(open),
+        };
+
+        let result = resolve_alias_to_thing(&config, "gh");
+        assert!(result.is_err());
+        match result {
+            Err(Error::Missing(msg)) => {
+                assert_eq!(msg, "No things defined in config");
+            }
+            _ => panic!("Expected Missing error"),
+        }
+    }
+}

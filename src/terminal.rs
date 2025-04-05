@@ -53,3 +53,74 @@ pub fn print_message(title: &str, message: &str) {
     }
     println!("{}", bottom);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_format_line() {
+        // Test with text shorter than width
+        let result = format_line("Hello", 10);
+        assert_eq!(result, "│Hello   │");
+        
+        // Test with text equal to inner width
+        let result = format_line("12345678", 10);
+        assert_eq!(result, "│12345678│");
+        
+        // Test with text longer than inner width (should still format correctly)
+        let result = format_line("1234567890", 10);
+        assert_eq!(result, "│1234567890│");
+    }
+    
+    #[test]
+    fn test_top_border() {
+        // Test with small width
+        let result = top_border("test", 12);
+        assert_eq!(result, "╭── test ──╮");
+        
+        // Test with large width
+        let result = top_border("title", 20);
+        assert_eq!(result, "╭───── title ──────╮");
+        
+        // Test with empty title
+        let result = top_border("", 10);
+        assert_eq!(result, "╭───  ───╮");
+    }
+    
+    #[test]
+    fn test_bottom_border() {
+        // Test with various widths
+        let result = bottom_border(10);
+        assert_eq!(result, "╰────────╯");
+        
+        let result = bottom_border(5);
+        assert_eq!(result, "╰───╯");
+    }
+    
+    #[test]
+    fn test_get_terminal_width() {
+        // Test default case (should return default or env var if set)
+        let width = get_terminal_width();
+        // We can't easily assert the exact value since it depends on env or default
+        assert!(width > 0);
+        
+        // Test with specific env var set
+        unsafe {
+            env::set_var("COLUMNS", "80");
+        }
+        assert_eq!(get_terminal_width(), 80);
+        
+        // Test with invalid env var value
+        unsafe {
+            env::set_var("COLUMNS", "invalid");
+        }
+        // Should fall back to default
+        assert_eq!(get_terminal_width(), 120);
+        
+        // Clean up
+        unsafe {
+            env::remove_var("COLUMNS");
+        }
+    }
+}
