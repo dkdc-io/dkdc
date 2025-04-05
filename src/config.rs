@@ -1,3 +1,4 @@
+use crate::error::{Error, Result};
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::env;
@@ -7,43 +8,79 @@ use std::path::PathBuf;
 const DKDC_DIR: &str = ".dkdc";
 const DKDC_CONFIG: &str = "config.toml";
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Config {
     pub open: Option<Open>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Open {
     pub things: Option<HashMap<String, String>>,
     pub aliases: Option<HashMap<String, String>>,
 }
 
-pub fn get_dkdc_dir() -> PathBuf {
+pub fn get_dkdc_dir() -> Result<PathBuf> {
     env::var("DKDC_HOME")
         .map(PathBuf::from)
-        .unwrap_or_else(|_| {
-            let home = env::var("HOME").expect("HOME not set");
-            let mut path = PathBuf::from(home);
-            path.push(DKDC_DIR);
-            if !path.exists() {
-                fs::create_dir_all(&path).expect("failed to create .dkdc directory");
-            }
-            path
+        .or_else(|_| {
+            env::var("HOME")
+                .map(|home| {
+                    let mut path = PathBuf::from(home);
+                    path.push(DKDC_DIR);
+                    path
+                })
+                .map_err(|_| Error::Config("HOME environment variable not set".to_string()))
         })
+        .map(|path| {
+            if !path.exists() {
+                fs::create_dir_all(&path)
+                    .map_err(|e| Error::Io(e))?;
+            }
+            Ok(path)
+        })?
 }
 
-pub fn get_config_path() -> PathBuf {
-    let mut path = get_dkdc_dir();
+pub fn get_config_path() -> Result<PathBuf> {
+    let mut path = get_dkdc_dir()?;
     path.push(DKDC_CONFIG);
-    path
+    Ok(path)
 }
 
-pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
-    let config_path = get_config_path();
+pub fn load_config() -> Result<Config> {
+    let config_path = get_config_path()?;
     if !config_path.exists() {
         return Ok(Config { open: None });
     }
     let contents = fs::read_to_string(config_path)?;
     let config: Config = toml::from_str(&contents)?;
     Ok(config)
+}
+
+pub fn resolve_alias_to_thing(config: &Config, input: &str) -> Result<String> {
+    // First check if the input is an alias
+    let target = if let Some(ref open) = config.open {
+        if let Some(aliases) = &open.aliases {
+            if let Some(mapped) = aliases.get(input) {
+                mapped.to_owned()
+            } else {
+                input.to_owned()
+            }
+        } else {
+            input.to_owned()
+        }
+    } else {
+        input.to_owned()
+    };
+
+    // Now get the actual thing URL/path
+    if let Some(ref open) = config.open {
+        if let Some(things) = &open.things {
+            if let Some(mapped) = things.get(&target) {
+                return Ok(mapped.to_owned());
+            }
+            return Err(Error::Missing(format!("'{}' not found in config", target)));
+        }
+        return Err(Error::Missing("No things defined in config".to_string()));
+    }
+    Err(Error::Missing("Open section not defined in config".to_string()))
 }

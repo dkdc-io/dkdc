@@ -1,52 +1,62 @@
-//use crate::terminal::{bottom_border, format_line, get_terminal_width, print_message, top_border};
-use std::io::{self};
+use crate::error::{Error, Result};
+use crate::terminal::print_message;
+use std::path::Path;
 use std::process::Command;
 
-pub fn gif_it(input: String, output: Option<String>) {
-    println!("Converting to gif...");
-    println!("Input: {}", input);
+pub fn gif_it(input: String, output: Option<String>) -> Result<()> {
+    print_message("dkdc", &format!(" converting {} to gif...", input));
+
+    let input_path = Path::new(&input);
+    if !input_path.exists() {
+        return Err(Error::Missing(format!("Input file {} not found", input)));
+    }
+
     let output_path = match output {
         Some(output) => output,
         None => extension_to_gif(&input),
     };
-    println!("Output: {}", output_path);
+
+    print_message("dkdc", &format!(" output: {}", output_path));
 
     // Execute ffmpeg to convert the file
-    match execute_ffmpeg(&input, &output_path) {
-        Ok(_) => println!("Conversion successful!"),
-        Err(e) => eprintln!("Error converting to GIF: {}", e),
-    }
+    execute_ffmpeg(&input, &output_path)
 }
 
 fn extension_to_gif(input: &str) -> String {
-    let mut output = String::from(input);
-    if input.contains(".") {
-        let mut parts: Vec<&str> = input.split(".").collect();
-        let extension = parts.pop().unwrap();
-        if extension != "gif" {
-            output = format!("{}.gif", parts.join("."));
+    let input_path = Path::new(input);
+    
+    match input_path.extension() {
+        Some(ext) if ext != "gif" => {
+            // If there's an extension and it's not gif, replace it
+            let stem = input_path.file_stem().unwrap_or_default();
+            format!("{}.gif", stem.to_string_lossy())
         }
-    } else {
-        output = format!("{}.gif", input);
+        Some(_) => {
+            // If it's already a gif, return as is
+            input.to_string()
+        }
+        None => {
+            // No extension, just add .gif
+            format!("{}.gif", input)
+        }
     }
-    output
 }
 
-fn execute_ffmpeg(input: &str, output: &str) -> Result<(), io::Error> {
+fn execute_ffmpeg(input: &str, output: &str) -> Result<()> {
     let status = Command::new("ffmpeg")
         .arg("-i")
         .arg(input)
         .arg("-filter_complex")
         .arg("[0:v] fps=10,scale=640:-1:flags=lanczos,palettegen [p]; [0:v] fps=10,scale=640:-1:flags=lanczos [x]; [x][p] paletteuse")
+        .arg("-y") // Overwrite output if it exists
         .arg(output)
-        .status()?;
+        .status()
+        .map_err(|e| Error::Command(format!("Failed to execute ffmpeg: {}", e)))?;
 
     if !status.success() {
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
-            format!("ffmpeg exited with status: {}", status),
-        ));
+        return Err(Error::Ffmpeg(format!("ffmpeg exited with status: {}", status)));
     }
 
+    print_message("dkdc", " conversion successful!");
     Ok(())
 }

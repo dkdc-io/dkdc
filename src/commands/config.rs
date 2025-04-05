@@ -1,6 +1,8 @@
 use crate::config::get_config_path;
+use crate::error::{Error, Result};
 use crate::terminal::print_message;
 use std::env;
+use std::fs;
 use std::process::Command;
 
 pub const DEFAULT_CONFIG: &str = r#"# dkdc config
@@ -9,15 +11,16 @@ a = "thing"
 alias = "thing"
     
 [open.things]
-thing = "https:://github.com/dkdc-io/dkdc"
+thing = "https://github.com/dkdc-io/dkdc"
 "#;
 
-pub fn config_it() {
-    let config_file = get_config_path();
+pub fn config_it() -> Result<()> {
+    let config_file = get_config_path()?;
 
     if !config_file.exists() {
         print_message("dkdc", " creating default config file...");
-        std::fs::write(&config_file, DEFAULT_CONFIG).expect("failed to write config file");
+        fs::write(&config_file, DEFAULT_CONFIG)
+            .map_err(|e| Error::Config(format!("Failed to write config file: {}", e)))?;
     }
 
     let editor = env::var("EDITOR").unwrap_or_else(|_| "vi".to_string());
@@ -26,7 +29,7 @@ pub fn config_it() {
         "dkdc",
         &format!(
             " opening {} with {}...",
-            config_file.to_str().expect("failed to convert to str"),
+            config_file.to_str().ok_or_else(|| Error::Config("Failed to convert path to string".to_string()))?,
             editor
         ),
     );
@@ -34,9 +37,11 @@ pub fn config_it() {
     let status = Command::new(editor)
         .arg(&config_file)
         .status()
-        .expect("failed to execute process");
+        .map_err(|e| Error::Command(format!("Failed to execute editor: {}", e)))?;
 
     if !status.success() {
-        eprintln!("failed to edit config file");
+        return Err(Error::Command("Editor exited with non-zero status".to_string()));
     }
+
+    Ok(())
 }

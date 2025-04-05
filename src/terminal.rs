@@ -1,14 +1,19 @@
 use std::env;
 
+/// Get the width of the terminal window
 pub fn get_terminal_width() -> usize {
+    // Try to get the width from environment variables
     if let Ok(cols) = env::var("COLUMNS") {
         if let Ok(width) = cols.parse::<usize>() {
             return width;
         }
     }
+
+    // Fall back to a reasonable default
     120
 }
 
+/// Format a line of text with borders for display
 pub fn format_line(text: &str, width: usize) -> String {
     let inner_width = width - 2;
     let text_len = text.chars().count();
@@ -16,6 +21,7 @@ pub fn format_line(text: &str, width: usize) -> String {
     format!("│{}{}│", text, " ".repeat(padding))
 }
 
+/// Create a top border with a title
 pub fn top_border(title: &str, width: usize) -> String {
     let title = format!(" {} ", title);
     let title_len = title.chars().count();
@@ -31,10 +37,12 @@ pub fn top_border(title: &str, width: usize) -> String {
     )
 }
 
+/// Create a bottom border
 pub fn bottom_border(width: usize) -> String {
     format!("╰{}╯", "─".repeat(width - 2))
 }
 
+/// Print a formatted message with a title and borders
 pub fn print_message(title: &str, message: &str) {
     let width = get_terminal_width();
     let top = top_border(title, width);
